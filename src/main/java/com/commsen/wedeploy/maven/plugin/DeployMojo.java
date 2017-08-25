@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -23,6 +24,8 @@ import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
+import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
 
 @Mojo(name = "deploy", defaultPhase = LifecyclePhase.INSTALL, requiresOnline = true, requiresProject = true, requiresDirectInvocation = true)
 // @Execute (phase=LifecyclePhase.PACKAGE)
@@ -49,19 +52,25 @@ public class DeployMojo extends AbstractMojo {
 	private String project;
 
 	/**
-	 * Name of the WeDeploy project.
+	 * WeDeploy user.
 	 */
 	@Parameter(property = "wedeploy.user", required = false)
 	private String user;
 
 	/**
-	 * Name of the WeDeploy project.
+	 * WeDeploy password.
 	 */
 	@Parameter(property = "wedeploy.password", required = false)
 	private String password;
 
 	/**
-	 * Should the resulting artifact be deployed.
+	 * WeDeploy password.
+	 */
+	@Parameter(property = "wedeploy.serverId", required = false)
+	private String serverId;
+
+	/**
+	 * Additional (likely generated) files to be deployed.
 	 */
 	@Parameter(property = "wedeploy.add.files")
 	private List<File> addFiles;
@@ -75,19 +84,33 @@ public class DeployMojo extends AbstractMojo {
 	@Parameter(defaultValue = "${settings}", readonly = true)
 	private Settings settings;
 
+    @Component( hint = "mng-4384" )
+    private SecDispatcher securityDispatcher;
+	
+	
 	public void execute() throws MojoExecutionException {
 
 		logger.info("Checking WeDeploy credentials");
 		
+		String serverId = this.serverId;
+		if (serverId == null || serverId.isEmpty()) {
+			serverId = "wedeploy";
+		}
+		
 		String user = this.user;
-		Server server = settings.getServer("wedeploy");
+		Server server = settings.getServer(serverId);
 		if (user == null && server != null) {
 			user = server.getUsername();
 		}
 
-		String password = this.password;
-		if (password == null && server != null) {
-			password = server.getPassword();
+		String password;
+		try {
+			password = securityDispatcher.decrypt(this.password);
+			if (password == null && server != null) {
+				password = securityDispatcher.decrypt(server.getPassword());
+			}
+		} catch (SecDispatcherException e) {
+			throw new MojoExecutionException("Failed to decrypt password!", e);
 		}
 
 		if (user == null || password == null) {
@@ -95,8 +118,7 @@ public class DeployMojo extends AbstractMojo {
 					"Missing WeDeploy credentials! You can provide them in one of the following ways: \n"
 							+ " 1) use <user> and <password> in plugin's configuration \n"
 							+ " 2) use <wedeploy.user> and <wedeploy.password> project properties \n"
-							+ " 3) add server configuration in `settings.xml` with id `wedeploy` providing <username> and <password>");
-
+							+ " 3) use <serverId> (default: wedeploy) in plugin's configuration and add server configuration in `settings.xml`");
 		}
 
 		logger.info("Preparing files to deploy");
