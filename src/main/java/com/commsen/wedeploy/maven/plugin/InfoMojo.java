@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 
 import com.commsen.wedeploy.client.WeDeployClient;
 import com.commsen.wedeploy.client.WeDeployClientException;
-import com.commsen.wedeploy.client.api.WeDeployStatusDTO;
-import com.commsen.wedeploy.client.api.WeDeployStatusService;
+import com.commsen.wedeploy.client.cloud.WeDeployStatusDTO;
+import com.commsen.wedeploy.client.cloud.WeDeployStatusService;
 
 @Mojo(name = "info", defaultPhase = LifecyclePhase.NONE, requiresProject=false)
 public class InfoMojo extends AbstractMojo {
