@@ -1,0 +1,4 @@
+{
+    "id": "maven-plugin-test",
+    "image": "wedeploy/hosting:0.0.3"
+}

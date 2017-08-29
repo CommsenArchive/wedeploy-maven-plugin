@@ -12,6 +12,15 @@
 	language governing permissions and limitations under the License. -->
 
 <settings>
+
+	<servers>
+		<server>
+			<id>wedeploy</id>
+			<username>${settings.servers.wedeploy.username}</username>
+			<password>${settings.servers.wedeploy.password}</password>
+		</server>
+	</servers>
+	
 	<profiles>
 		<profile>
 			<id>it-repo</id>
