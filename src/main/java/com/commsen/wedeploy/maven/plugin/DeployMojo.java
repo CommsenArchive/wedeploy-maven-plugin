@@ -27,20 +27,27 @@ import org.slf4j.LoggerFactory;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
 
+/**
+ * Deploys a set of files to given WeDeploy project.<br>
+ * 
+ * @author milen
+ */
 @Mojo(name = "deploy", defaultPhase = LifecyclePhase.INSTALL, requiresOnline = true, requiresProject = true, requiresDirectInvocation = true)
-// @Execute (phase=LifecyclePhase.PACKAGE)
 public class DeployMojo extends AbstractMojo {
 
 	private Logger logger = LoggerFactory.getLogger(InfoMojo.class);
 
 	/**
-	 * Location of the directory containing files to deploy.
+	 * Location of the directory containing files to deploy. It must contain {@code wedeploy.json} file which provides 
+	 * WeDeploy with the name of the service and deployment parameters 
+	 * (see <a href="https://wedeploy.com/docs/deploy/getting-started/">https://wedeploy.com/docs/deploy/getting-started/</a>) for details!
 	 */
 	@Parameter(defaultValue = "${project.basedir}/src/wedeploy", property = "wedeploy.source.directory", required = true)
 	private File sourceDirectory;
 
 	/**
-	 * Location of the directory containing files to deploy.
+	 * Location of the directory where files from {@link DeployMojo#sourceDirectory} directory will be merged with 
+	 * files in {@link DeployMojo#includes}! The result is what gets deployed.
 	 */
 	@Parameter(defaultValue = "${project.build.directory}/wedeploy", property = "wedeploy.output.directory", required = true)
 	private File targetDirectory;
@@ -64,7 +71,7 @@ public class DeployMojo extends AbstractMojo {
 	private String password;
 
 	/**
-	 * WeDeploy password.
+	 * The id of the server section in {@code settings.xml} that contains WeDeploy credentials.
 	 */
 	@Parameter(property = "wedeploy.serverId", required = false)
 	private String serverId;
@@ -72,11 +79,11 @@ public class DeployMojo extends AbstractMojo {
 	/**
 	 * Additional (likely generated) files to be deployed.
 	 */
-	@Parameter(property = "wedeploy.add.files")
-	private List<File> addFiles;
+	@Parameter(property = "wedeploy.includes")
+	private List<File> includes;
 
 	/**
-	 * Name of the WeDeploy project.
+	 * Merge the files in {@link DeployMojo#targetDirectory} but do not deploy them.
 	 */
 	@Parameter(defaultValue = "false", property = "wedeploy.dryrun", required = false)
 	private boolean dryrun;
@@ -127,8 +134,8 @@ public class DeployMojo extends AbstractMojo {
 			FileUtils.deleteDirectory(targetDirectory);
 			FileUtils.copyDirectory(sourceDirectory, targetDirectory);
 
-			if (!addFiles.isEmpty()) {
-				for (File file : addFiles) {
+			if (!includes.isEmpty()) {
+				for (File file : includes) {
 					FileUtils.copyFileToDirectory(file, targetDirectory);
 				}
 			}

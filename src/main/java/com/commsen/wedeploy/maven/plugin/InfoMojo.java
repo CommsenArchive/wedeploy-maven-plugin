@@ -13,6 +13,12 @@ import com.commsen.wedeploy.client.WeDeployClientException;
 import com.commsen.wedeploy.client.cloud.WeDeployStatusDTO;
 import com.commsen.wedeploy.client.cloud.WeDeployStatusService;
 
+/**
+ * Displays the status of WeDeploy's online services. 
+ * 
+ * @author milen
+ *
+ */
 @Mojo(name = "info", defaultPhase = LifecyclePhase.NONE, requiresProject=false)
 public class InfoMojo extends AbstractMojo {
 
@@ -26,19 +32,14 @@ public class InfoMojo extends AbstractMojo {
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		
 		try {
-			
 			logger.info("Checking WeDeploy status:");
 			WeDeployStatusDTO status = weDeployStatus.get(true);
 			logger.info("Auth service: " + status.auth);
 			logger.info("Data service: " + status.data);
 			logger.info("Email service: " + status.email);
-			
 		} catch (WeDeployClientException e) {
 			throw new MojoExecutionException("Failed to check WeDeploy status", e);
 		}
-
 	}
-
 }
