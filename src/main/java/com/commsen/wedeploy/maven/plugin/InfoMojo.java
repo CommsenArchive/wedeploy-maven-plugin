@@ -19,7 +19,7 @@ import com.commsen.wedeploy.client.cloud.WeDeployStatusService;
  * @author milen
  *
  */
-@Mojo(name = "info", defaultPhase = LifecyclePhase.NONE, requiresProject=false)
+@Mojo(name = "info", defaultPhase = LifecyclePhase.NONE, requiresProject=false, requiresOnline=true)
 public class InfoMojo extends AbstractMojo {
 
 	private Logger logger = LoggerFactory.getLogger(InfoMojo.class);
