@@ -33,7 +33,7 @@
 	</developers>
 
 	<scm>
-		<url>https://github.com/azzazzel/wedeploy-maven-plugin/blob/v.${project.version}</url>
+		<url>https://github.com/azzazzel/wedeploy-maven-plugin/tree/v.${project.version}</url>
 		<connection>scm:git:https://github.com/azzazzel/wedeploy-maven-plugin.git</connection>
 	</scm>
 
