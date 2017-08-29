@@ -37,7 +37,7 @@ This is what tells WeDeploy how to build the container for you. It may look like
 See [Dockerfile format](https://docs.docker.com/engine/reference/builder/#format) for more details!	
 
 
-### <a name="credentials" /> Provide your WeDeply credentials
+### <a name="credentials" /> Provide your WeDeploy credentials
 
 Open `<MAVEN_HOME>/settings.xml` file and create a server entry for your WeDeploy account. It should look like this:
 
@@ -54,7 +54,7 @@ You can provide your password in plain text (not recommended) or [encrypt it fir
 
 By default the plugin will try to find credentials in server with id `wedeploy`. If you choose to use another id, you'll also need to set [serverId](/deploy-mojo.html#serverId) property!
 
-### <a name="plugin" /> Configure WeDeply Maven Plugin
+### <a name="plugin" /> Configure WeDeploy Maven Plugin
 
 Here is an example configuration that will try to deploy `${project.build.directory}/${project.artifactId}.jar` to `my_wedeploy_project` :
 
